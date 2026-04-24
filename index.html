@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Physics Simulator - Interactive Kinematics</title>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🚀 Physics Simulator</h1>
+            <div class="header-controls">
+                <button id="theme-toggle" class="theme-btn" title="Toggle Dark/Light Mode">🌙</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Panel: Controls -->
+            <aside class="control-panel">
+                <div class="panel-header">
+                    <h2>Simulation Settings</h2>
+                </div>
+
+                <!-- Simulation Mode Selection -->
+                <div class="control-group">
+                    <label for="simulation-mode">Simulation Mode:</label>
+                    <select id="simulation-mode">
+                        <option value="projectile">Projectile Motion</option>
+                        <option value="freefall">Free Fall</option>
+                        <option value="horizontal">Horizontal Projection</option>
+                        <option value="twobody">Two-Body Interaction</option>
+                        <option value="custom">Custom Script</option>
+                    </select>
+                </div>
+
+                <!-- Gravity Presets -->
+                <div class="control-group">
+                    <label for="gravity-preset">Gravity Preset:</label>
+                    <select id="gravity-preset">
+                        <option value="custom">Custom</option>
+                        <option value="earth">Earth (9.81 m/s²)</option>
+                        <option value="moon">Moon (1.62 m/s²)</option>
+                        <option value="mars">Mars (3.71 m/s²)</option>
+                        <option value="jupiter">Jupiter (24.79 m/s²)</option>
+                    </select>
+                </div>
+
+                <!-- Gravity Input -->
+                <div class="control-group">
+                    <label for="gravity">Gravity (m/s²):</label>
+                    <input type="number" id="gravity" value="9.81" step="0.01" min="0">
+                    <input type="range" id="gravity-slider" min="0" max="50" step="0.1" value="9.81" class="slider">
+                </div>
+
+                <!-- Initial Velocity -->
+                <div class="control-group">
+                    <label for="velocity">Initial Velocity (m/s):</label>
+                    <input type="number" id="velocity" value="20" step="0.1" min="0">
+                    <input type="range" id="velocity-slider" min="0" max="100" step="0.1" value="20" class="slider">
+                </div>
+
+                <!-- Velocity Direction -->
+                <div class="control-group">
+                    <label for="velocity-direction">Direction (degrees):</label>
+                    <input type="number" id="velocity-direction" value="45" step="1" min="0" max="360">
+                    <input type="range" id="velocity-direction-slider" min="0" max="360" step="1" value="45" class="slider">
+                </div>
+
+                <!-- Angle of Projection -->
+                <div class="control-group">
+                    <label for="angle">Launch Angle (degrees):</label>
+                    <input type="number" id="angle" value="45" step="1" min="-90" max="90">
+                    <input type="range" id="angle-slider" min="-90" max="90" step="1" value="45" class="slider">
+                </div>
+
+                <!-- Acceleration -->
+                <div class="control-group">
+                    <label for="acceleration">Acceleration (m/s²):</label>
+                    <input type="number" id="acceleration" value="0" step="0.1">
+                    <input type="range" id="acceleration-slider" min="-10" max="10" step="0.1" value="0" class="slider">
+                </div>
+
+                <!-- Mass -->
+                <div class="control-group">
+                    <label for="mass">Mass (kg):</label>
+                    <input type="number" id="mass" value="1" step="0.1" min="0.1">
+                </div>
+
+                <!-- Air Resistance -->
+                <div class="control-group checkbox">
+                    <label for="air-resistance">
+                        <input type="checkbox" id="air-resistance">
+                        Enable Air Resistance
+                    </label>
+                    <div class="tooltip" title="Adds drag force proportional to velocity">ℹ️</div>
+                </div>
+
+                <!-- Drag Coefficient -->
+                <div class="control-group" id="drag-group" style="display: none;">
+                    <label for="drag-coefficient">Drag Coefficient:</label>
+                    <input type="number" id="drag-coefficient" value="0.1" step="0.01" min="0">
+                    <input type="range" id="drag-slider" min="0" max="1" step="0.01" value="0.1" class="slider">
+                </div>
+
+                <!-- Collision Detection -->
+                <div class="control-group checkbox">
+                    <label for="collision">
+                        <input type="checkbox" id="collision" checked>
+                        Enable Collision Detection
+                    </label>
+                    <div class="tooltip" title="Detects and handles collisions between objects">ℹ️</div>
+                </div>
+
+                <!-- Time Controls -->
+                <div class="control-group button-group">
+                    <button id="start-btn" class="btn btn-primary">Start</button>
+                    <button id="pause-btn" class="btn btn-secondary" disabled>Pause</button>
+                    <button id="resume-btn" class="btn btn-secondary" disabled>Resume</button>
+                    <button id="reset-btn" class="btn btn-danger">Reset</button>
+                </div>
+
+                <!-- Playback Speed -->
+                <div class="control-group">
+                    <label for="speed">Playback Speed:</label>
+                    <input type="range" id="speed" min="0.1" max="3" step="0.1" value="1" class="slider">
+                    <span id="speed-value">1x</span>
+                </div>
+
+                <!-- Save/Load -->
+                <div class="control-group button-group">
+                    <button id="save-btn" class="btn btn-secondary">Save Settings</button>
+                    <button id="load-btn" class="btn btn-secondary">Load Settings</button>
+                </div>
+
+                <!-- Display Options -->
+                <div class="control-group">
+                    <h3>Display Options</h3>
+                    <label><input type="checkbox" id="show-trajectory" checked> Show Trajectory</label>
+                    <label><input type="checkbox" id="show-vectors" checked> Show Vectors</label>
+                    <label><input type="checkbox" id="show-grid" checked> Show Grid</label>
+                    <label><input type="checkbox" id="show-info" checked> Show Info Panel</label>
+                </div>
+            </aside>
+
+            <!-- Right Panel: Visualization -->
+            <main class="visualization-panel">
+                <!-- Canvas Container -->
+                <div class="canvas-container">
+                    <canvas id="simulation-canvas" width="800" height="600"></canvas>
+                </div>
+
+                <!-- Info Panel -->
+                <div class="info-panel" id="info-panel">
+                    <h3>Current Values</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">Time:</span>
+                            <span id="time-display" class="value">0.00 s</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Position X:</span>
+                            <span id="pos-x-display" class="value">0.00 m</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Position Y:</span>
+                            <span id="pos-y-display" class="value">0.00 m</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Velocity:</span>
+                            <span id="velocity-display" class="value">0.00 m/s</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Height:</span>
+                            <span id="height-display" class="value">0.00 m</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Range:</span>
+                            <span id="range-display" class="value">0.00 m</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Graph Panel -->
+                <div class="graph-panel">
+                    <h3>Graphs</h3>
+                    <div class="graph-tabs">
+                        <button class="graph-tab-btn active" data-graph="position">Position vs Time</button>
+                        <button class="graph-tab-btn" data-graph="velocity">Velocity vs Time</button>
+                        <button class="graph-tab-btn" data-graph="energy">Energy vs Time</button>
+                    </div>
+                    <canvas id="graph-canvas" width="400" height="250"></canvas>
+                </div>
+            </main>
+        </div>
+
+        <!-- Custom Script Panel (Hidden by default) -->
+        <div class="script-panel" id="script-panel" style="display: none;">
+            <h3>Custom Physics Script</h3>
+            <textarea id="custom-script" placeholder="Define custom physics rules here...
+// Example:
+// x = initialVelocity * Math.cos(angle) * time;
+// y = initialVelocity * Math.sin(angle) * time - 0.5 * gravity * time * time;
+"></textarea>
+            <button id="apply-script">Apply Script</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="modules/utils.js"></script>
+    <script src="modules/physics.js"></script>
+    <script src="modules/render.js"></script>
+    <script src="modules/storage.js"></script>
+    <script src="modules/ui.js"></script>
+</body>
+</html>
